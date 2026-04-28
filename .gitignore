@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.env
+
+convert_py_to_ipynb.py
+baseline_cnn/baseline_cnn.py
+comparison/model_comparison.py
+finetuned_cnn/finetuned_resnet18.py
+*.pth
+improved_cnn/improved_cnn.py
+improved_cnn/preprocess_dataset.py
+
+
