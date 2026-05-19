@@ -32,10 +32,8 @@ from pathlib import Path
 from PIL import Image
 from icrawler.builtin import BingImageCrawler, GoogleImageCrawler
 
-# ============================================================================
-# Configuration
-# ============================================================================
 
+# Configuration
 DATASET_DIR = "dataset"
 
 # Minimum acceptable image dimensions (width, height).
@@ -144,9 +142,9 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
 
-# ============================================================================
+
 # Utility Functions
-# ============================================================================
+
 
 
 def create_directories() -> None:
@@ -193,33 +191,28 @@ def resize_image(filepath: str, size: tuple) -> None:
 
 
 def count_images(class_name: str) -> int:
-    """Count the number of images currently in a class directory."""
     d = os.path.join(DATASET_DIR, class_name)
     if not os.path.exists(d):
         return 0
     return len([f for f in os.listdir(d) if not f.startswith(".")])
 
 
-# ============================================================================
+
 # Scraping
-# ============================================================================
+
 
 
 def scrape_class(class_name: str, queries: list) -> None:
-    """
-    Download images for a single class using multiple search queries.
-    Uses both Bing and Google via icrawler for maximum coverage.
-    """
     class_dir = os.path.join(DATASET_DIR, class_name)
 
-    print(f"\n{'='*60}")
-    print(f"  SCRAPING: {class_name.upper()}  ({len(queries)} queries)")
-    print(f"{'='*60}")
+    
+    print(f"SCRAPING: {class_name.upper()}  ({len(queries)} queries)")
+    
 
     for idx, query in enumerate(queries, start=1):
-        print(f"\n  [{idx}/{len(queries)}] \"{query}\"")
+        print(f"[{idx}/{len(queries)}] \"{query}\"")
 
-        # --- Bing ---
+        # Bing
         try:
             bing = BingImageCrawler(
                 storage={"root_dir": class_dir},
@@ -231,11 +224,11 @@ def scrape_class(class_name: str, queries: list) -> None:
                 max_num=IMAGES_PER_QUERY,
                 file_idx_offset="auto",
             )
-            print(f"           Bing  ✓  (total so far: {count_images(class_name)})")
+            print(f"Bing ✓ (total so far: {count_images(class_name)})")
         except Exception as e:
-            print(f"           Bing  ✗  {e}")
+            print(f"Bing ✗ {e}")
 
-        # --- Google ---
+        # Google
         try:
             google = GoogleImageCrawler(
                 storage={"root_dir": class_dir},
@@ -247,30 +240,22 @@ def scrape_class(class_name: str, queries: list) -> None:
                 max_num=IMAGES_PER_QUERY,
                 file_idx_offset="auto",
             )
-            print(f"           Google ✓  (total so far: {count_images(class_name)})")
+            print(f"Google ✓ (total so far: {count_images(class_name)})")
         except Exception as e:
-            print(f"           Google ✗  {e}")
+            print(f"Google ✗ {e}")
 
-        # Brief pause between queries
         time.sleep(1.5)
 
     total = count_images(class_name)
-    print(f"\n  >> Raw images for '{class_name}': {total}")
+    print(f">> Raw images for '{class_name}': {total}")
 
 
-# ============================================================================
+
 # Post-processing
-# ============================================================================
+
 
 
 def clean_class_directory(class_name: str) -> dict:
-    """
-    Clean a class directory:
-      1. Remove corrupt / unreadable images
-      2. Remove images below min size
-      3. Remove exact duplicates (MD5 hash)
-      4. Resize remaining images
-    """
     class_dir = os.path.join(DATASET_DIR, class_name)
     files = sorted(Path(class_dir).iterdir())
 
@@ -306,38 +291,35 @@ def clean_class_directory(class_name: str) -> dict:
 
 
 def clean_dataset() -> None:
-    """Run cleaning on all class directories and print a summary."""
-    print(f"\n{'='*60}")
-    print("  POST-PROCESSING: Cleaning dataset")
-    print(f"{'='*60}\n")
+    
+    print("POST-PROCESSING: Cleaning dataset")
+    
 
     total = 0
     for class_name in CLASSES:
         stats = clean_class_directory(class_name)
         total += stats["kept"]
         print(
-            f"  {class_name.upper():<12} | "
+            f"{class_name.upper():<12} | "
             f"Before: {stats['total_before']:>5} | "
             f"Corrupt: {stats['removed_corrupt']:>4} | "
             f"Duplicate: {stats['removed_duplicate']:>4} | "
             f"Kept: {stats['kept']:>5}"
         )
 
-    print(f"\n  >> Total usable images: {total}")
-    print(f"  >> Dataset location:    ./{DATASET_DIR}/\n")
+    print(f">> Total usable images: {total}")
+    print(f">> Dataset location:    ./{DATASET_DIR}/")
 
 
-# ============================================================================
+
 # Main
-# ============================================================================
+
 
 
 def main():
-    print("\n" + "=" * 60)
-    print("  GUITAR IMAGE DATASET COLLECTION")
-    print("  Sources: Bing + Google Image Search")
-    print("  Classes: acoustic (+ classical), electric, bass")
-    print("=" * 60)
+    print("GUITAR IMAGE DATASET COLLECTION")
+    print("Sources: Bing + Google Image Search")
+    print("Classes: acoustic (+ classical), electric, bass")
 
     # Step 1: Create directories
     create_directories()
@@ -351,12 +333,12 @@ def main():
 
     # Step 4: Final summary
     print("=" * 60)
-    print("  FINAL COUNTS")
+    print("FINAL COUNTS")
     print("=" * 60)
     for class_name in CLASSES:
         n = count_images(class_name)
-        print(f"  {class_name:<12}: {n:>5} images")
-    print("\n  DONE ✓\n")
+        print(f"{class_name:<12}: {n:>5} images")
+    print("DONE ")
 
 
 if __name__ == "__main__":

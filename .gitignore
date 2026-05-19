@@ -19,4 +19,7 @@ finetuned_cnn/finetuned_resnet18.py
 improved_cnn/improved_cnn.py
 improved_cnn/preprocess_dataset.py
 
+implementation_steps.html
+challenges_future_improvements.html
+results.html
 
