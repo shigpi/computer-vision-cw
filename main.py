@@ -22,6 +22,35 @@ st.set_page_config(
 #  Constants 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "finetuned_cnn", "resnet18_deploy.pth")
 
+MODEL_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "finetuned_cnn",
+    "resnet18_deploy.pth"
+)
+
+# Create folder if it doesn't exist
+os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+
+# Download model only if it doesn't already exist
+from huggingface_hub import hf_hub_download
+if not os.path.exists(MODEL_PATH):
+    print("Model not found locally. Downloading from Hugging Face...")
+
+    downloaded_path = hf_hub_download(
+        repo_id="kkarhm/guitar-type-detector-resnet18",
+        filename="resnet18_deploy.pth",
+        local_dir=os.path.dirname(MODEL_PATH),
+        local_dir_use_symlinks=False
+    )
+
+    # Rename/move to your exact MODEL_PATH if needed
+    if downloaded_path != MODEL_PATH:
+        os.replace(downloaded_path, MODEL_PATH)
+
+    print(f"Model downloaded to: {MODEL_PATH}")
+else:
+    print("Model already exists locally.")
+
 CLASS_ICONS = {
     "acoustic": "🎸",
     "electric": "⚡",
